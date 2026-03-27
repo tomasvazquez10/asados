@@ -16,20 +16,18 @@ public class SecurityConfigLocal {
     public SecurityConfigLocal(JwtAuthFilter jwtAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
     }
-/*
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // TODO abierto
-                );
+                .cors(cors -> {})
+                .csrf(csrf -> csrf.disable());
 
         return http.build();
     }
 
 
- */
+ /*
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -47,5 +45,5 @@ public class SecurityConfigLocal {
                         UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
+*/
 }

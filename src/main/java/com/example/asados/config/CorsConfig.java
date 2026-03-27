@@ -15,7 +15,8 @@ public class CorsConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:8080",
-                "https://asados-1.onrender.com/"
+                "https://asados-1.onrender.com/",
+                "https://asados-frontend.vercel.app"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

@@ -1,5 +1,6 @@
 package com.example.asados.service.impl;
 
+import com.example.asados.dto.AsadoMesResumenDTO;
 import com.example.asados.dto.AsadoRequestDTO;
 import com.example.asados.dto.AsadoResponseDTO;
 import com.example.asados.dto.CorteDTO;
@@ -11,8 +12,11 @@ import com.example.asados.repository.*;
 import com.example.asados.service.AsadoService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class AsadoServiceImpl implements AsadoService {
@@ -105,6 +109,60 @@ public class AsadoServiceImpl implements AsadoService {
                 .orElseThrow(() -> new RuntimeException("Asado no encontrado"));
 
         return toDTO(a);
+    }
+
+    @Override
+    public List<AsadoResponseDTO> getByRangoFechas(LocalDate desde, LocalDate hasta) {
+        return asadoRepo.findByFechaBetween(desde, hasta).stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    @Override
+    public List<AsadoResponseDTO> getByMes(int anio, int mes) {
+        LocalDate desde = LocalDate.of(anio, mes, 1);
+        LocalDate hasta = desde.withDayOfMonth(desde.lengthOfMonth());
+
+        return this.getByRangoFechas(desde, hasta);
+    }
+
+    @Override
+    public AsadoMesResumenDTO getResumenMes(int anio, int mes) {
+        LocalDate desde = LocalDate.of(anio, mes, 1);
+        LocalDate hasta = desde.withDayOfMonth(desde.lengthOfMonth());
+
+        List<Asado> asados = asadoRepo.findByFechaBetween(desde, hasta);
+
+        AsadoMesResumenDTO dto = new AsadoMesResumenDTO();
+
+        dto.setCantidadAsados(asados.size());
+
+        int totalComensales = asados.stream()
+                .mapToInt(a -> a.getComensales().size())
+                .sum();
+        dto.setCantidadComensales(totalComensales);
+
+        double kilosTotales = asados.stream()
+                .flatMap(a -> a.getCortes().stream())
+                .mapToDouble(Corte::getCantidad)
+                .sum();
+        dto.setKilosTotales(kilosTotales);
+
+        Map<String, Long> porTipo = asados.stream()
+                .collect(Collectors.groupingBy(
+                        a -> a.getTipo().getNombre(),
+                        Collectors.counting()
+                ));
+        dto.setCantidadPorTipoAsado(porTipo);
+
+        double precioPromedio = asados.stream()
+                .mapToDouble(Asado::getPrecio)
+                .average()
+                .orElse(0.0);
+
+        dto.setPrecioPromedio(precioPromedio);
+
+        return dto;
     }
 
     @Override

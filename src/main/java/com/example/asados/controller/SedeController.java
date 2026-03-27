@@ -2,6 +2,7 @@ package com.example.asados.controller;
 
 import com.example.asados.dto.SedeRequestDTO;
 import com.example.asados.dto.SedeResponseDTO;
+import com.example.asados.dto.SedeStatsDTO;
 import com.example.asados.service.SedeService;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,4 +43,18 @@ public class SedeController {
     public void eliminar(@PathVariable Long id) {
         service.eliminar(id);
     }
+
+    @GetMapping("/stats")
+    public List<SedeStatsDTO> getStats() {
+        return service.getStats();
+    }
+
+    @GetMapping("/stats/mes")
+    public List<SedeStatsDTO> getStatsByMes(
+            @RequestParam int anio,
+            @RequestParam int mes
+    ) {
+        return service.getStatsByMes(anio, mes);
+    }
+
 }

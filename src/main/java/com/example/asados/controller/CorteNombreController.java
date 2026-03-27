@@ -2,7 +2,9 @@ package com.example.asados.controller;
 
 import com.example.asados.dto.CorteNombreRequestDTO;
 import com.example.asados.dto.CorteNombreResponseDTO;
+import com.example.asados.dto.CorteNombreStatsDTO;
 import com.example.asados.service.CorteNombreService;
+import com.example.asados.service.CorteService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,9 +14,11 @@ import java.util.List;
 public class CorteNombreController {
 
     private final CorteNombreService service;
+    private final CorteService corteService;
 
-    public CorteNombreController(CorteNombreService service) {
+    public CorteNombreController(CorteNombreService service, CorteService corteService) {
         this.service = service;
+        this.corteService = corteService;
     }
 
     @PostMapping
@@ -41,5 +45,18 @@ public class CorteNombreController {
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable Long id) {
         service.eliminar(id);
+    }
+
+    @GetMapping("/stats")
+    public List<CorteNombreStatsDTO> getStats() {
+        return corteService.getStats();
+    }
+
+    @GetMapping("/stats/mes")
+    public List<CorteNombreStatsDTO> getStatsByMes(
+            @RequestParam int anio,
+            @RequestParam int mes
+    ) {
+        return corteService.getStatsByMes(anio, mes);
     }
 }

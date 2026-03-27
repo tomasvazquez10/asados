@@ -1,5 +1,6 @@
 package com.example.asados.service.impl;
 
+import com.example.asados.dto.CorteNombreStatsDTO;
 import com.example.asados.dto.CorteRequestDTO;
 import com.example.asados.dto.CorteResponseDTO;
 import com.example.asados.entity.Corte;
@@ -10,6 +11,7 @@ import com.example.asados.repository.CorteRepository;
 import com.example.asados.service.CorteService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -82,5 +84,18 @@ public class CorteServiceImpl implements CorteService {
     @Override
     public void eliminar(Long id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public List<CorteNombreStatsDTO> getStats() {
+        return repository.getStats();
+    }
+
+    @Override
+    public List<CorteNombreStatsDTO> getStatsByMes(int anio, int mes) {
+        LocalDate desde = LocalDate.of(anio, mes, 1);
+        LocalDate hasta = desde.withDayOfMonth(desde.lengthOfMonth());
+
+        return repository.getStatsByFecha(desde, hasta);
     }
 }

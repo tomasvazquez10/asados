@@ -21,7 +21,7 @@ public class UsuarioController {
     public UsuarioResponseDTO crear(@RequestBody UsuarioRequestDTO dto) {
         return service.crear(dto);
     }
-
+/*
     @GetMapping
     public List<UsuarioResponseDTO> listar() {
         return service.listar();
@@ -42,4 +42,5 @@ public class UsuarioController {
     public void eliminar(@PathVariable Long id) {
         service.eliminar(id);
     }
+ */
 }

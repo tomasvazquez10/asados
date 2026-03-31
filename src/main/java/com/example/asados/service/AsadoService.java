@@ -3,6 +3,7 @@ package com.example.asados.service;
 import com.example.asados.dto.AsadoMesResumenDTO;
 import com.example.asados.dto.AsadoRequestDTO;
 import com.example.asados.dto.AsadoResponseDTO;
+import com.example.asados.dto.AsadoSimpleRequestDTO;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,6 +23,8 @@ public interface AsadoService {
     AsadoMesResumenDTO getResumenMes(int anio, int mes);
 
     void eliminar(Long id);
+
+    AsadoResponseDTO crearDesdeSimple(AsadoSimpleRequestDTO request);
 }
 
 

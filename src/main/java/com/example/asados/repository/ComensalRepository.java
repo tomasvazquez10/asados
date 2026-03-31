@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface ComensalRepository extends JpaRepository<Comensal, Long> {
 
@@ -29,4 +30,6 @@ public interface ComensalRepository extends JpaRepository<Comensal, Long> {
             LocalDate desde,
             LocalDate hasta
     );
+
+    Optional<Comensal> findByUsuarioIgnoreCase(String usuario);
 }

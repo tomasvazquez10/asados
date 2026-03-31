@@ -3,7 +3,9 @@ package com.example.asados.controller;
 import com.example.asados.dto.AsadoMesResumenDTO;
 import com.example.asados.dto.AsadoRequestDTO;
 import com.example.asados.dto.AsadoResponseDTO;
+import com.example.asados.dto.AsadoSimpleRequestDTO;
 import com.example.asados.service.AsadoService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -63,5 +65,10 @@ public class AsadoController {
             @RequestParam int anio
     ) {
         return service.getResumenMes(anio, mes);
+    }
+
+    @PostMapping("/simple")
+    public AsadoResponseDTO crearSimple(@RequestBody AsadoSimpleRequestDTO request) {
+        return service.crearDesdeSimple(request);
     }
 }

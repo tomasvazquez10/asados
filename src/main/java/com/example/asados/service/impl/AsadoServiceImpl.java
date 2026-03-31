@@ -1,19 +1,17 @@
 package com.example.asados.service.impl;
 
-import com.example.asados.dto.AsadoMesResumenDTO;
-import com.example.asados.dto.AsadoRequestDTO;
-import com.example.asados.dto.AsadoResponseDTO;
-import com.example.asados.dto.CorteDTO;
-import com.example.asados.entity.Asado;
-import com.example.asados.entity.Comensal;
-import com.example.asados.entity.Corte;
+import com.example.asados.dto.*;
+import com.example.asados.entity.*;
 import com.example.asados.mapper.CorteMapper;
 import com.example.asados.repository.*;
 import com.example.asados.service.AsadoService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -168,6 +166,72 @@ public class AsadoServiceImpl implements AsadoService {
     @Override
     public void eliminar(Long id) {
         asadoRepo.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public AsadoResponseDTO crearDesdeSimple(AsadoSimpleRequestDTO req) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+        LocalDate fecha = LocalDate.parse(req.getFecha(), formatter);
+
+        List<Long> comensalesIds = Arrays.stream(req.getComensales().split(","))
+                .map(String::trim)
+                .map(nombre -> comensalRepo.findByUsuarioIgnoreCase(nombre)
+                        .orElseThrow(() -> new RuntimeException("Comensal no existe: " + nombre))
+                        .getId())
+                .toList();
+
+        List<Comensal> comensales = comensalRepo.findAllById(comensalesIds);
+
+        TipoAsado tipoAsado = tipoRepo.findByNombreIgnoreCase(req.getTipo())
+                .orElseThrow(() -> new RuntimeException("Tipo no existe"));
+
+        Sede sede = sedeRepo.findByNombreIgnoreCase(req.getSede())
+                .orElseThrow(() -> new RuntimeException("Sede no existe"));
+
+        Grupo grupo = grupoRepo.findByNombreIgnoreCase(req.getGrupo())
+                .orElseThrow(() -> new RuntimeException("Grupo no existe"));
+
+        Double precio = Double.parseDouble(
+                req.getPrecio()
+                        .replace("$", "")
+                        .replace(".", "")
+                        .trim()
+        );
+
+        Asado asado = new Asado();
+        asado.setFecha(fecha);
+        asado.setPrecio(precio);
+        asado.setGrupo(grupo);
+        asado.setSede(sede);
+        asado.setTipo(tipoAsado);
+        asado.setComensales(comensales);
+
+        // 🥩 cortes → objetos
+        List<Corte> cortes = Arrays.stream(req.getCortes().split(";"))
+                .map(c -> {
+                    String[] data = c.split(":");
+
+                    String nombre = data[0].trim();
+                    Double cantidad = Double.parseDouble(data[1]);
+
+                    CorteNombre corteNombre = corteNombreRepo.findByNombreIgnoreCase(nombre)
+                            .orElseThrow(() -> new RuntimeException("Corte no existe: " + nombre));
+
+                    Corte corte = new Corte();
+                    corte.setCantidad(cantidad);
+                    corte.setCorteNombre(corteNombre);
+                    corte.setAsado(asado);
+
+                    return corte;
+                })
+                .toList();
+
+        asado.setCortes(cortes);
+
+        // 💾 guardar
+        return toDTO(asadoRepo.save(asado));
     }
 
     private AsadoResponseDTO toDTO(Asado a) {

@@ -4,6 +4,7 @@ import com.example.asados.dto.SedeStatsDTO;
 import com.example.asados.entity.Asado;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,4 +38,10 @@ public interface AsadoRepository extends JpaRepository<Asado, Long>{
             LocalDate desde,
             LocalDate hasta
     );
+
+    @Query("SELECT COUNT(a) FROM Asado a WHERE MONTH(a.fecha) = :mes AND YEAR(a.fecha) = :anio")
+    int countByMes(@Param("mes") int mes, @Param("anio") int anio);
+
+    @Query("SELECT COUNT(a) FROM Asado a")
+    int countTotal();
 }

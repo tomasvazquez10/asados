@@ -6,6 +6,7 @@ import com.example.asados.dto.ComensalStatsDTO;
 import com.example.asados.entity.Comensal;
 import com.example.asados.entity.Grupo;
 import com.example.asados.mapper.ComensalMapper;
+import com.example.asados.repository.AsadoRepository;
 import com.example.asados.repository.ComensalRepository;
 import com.example.asados.repository.GrupoRepository;
 import com.example.asados.service.ComensalService;
@@ -19,11 +20,13 @@ public class ComensalServiceImpl implements ComensalService {
 
     private final ComensalRepository repository;
     private final GrupoRepository grupoRepository;
+    private final AsadoRepository asadoRepository;
 
     public ComensalServiceImpl(ComensalRepository repository,
-                               GrupoRepository grupoRepository) {
+                               GrupoRepository grupoRepository, AsadoRepository asadoRepository) {
         this.repository = repository;
         this.grupoRepository = grupoRepository;
+        this.asadoRepository = asadoRepository;
     }
 
     @Override
@@ -81,8 +84,9 @@ public class ComensalServiceImpl implements ComensalService {
     public List<ComensalStatsDTO> getStats() {
 
         List<Object[]> raw = repository.getStatsRaw();
+        int totalAsados = asadoRepository.countTotal();
 
-        return getRespuestaStats(raw);
+        return getRespuestaStats(raw, totalAsados);
     }
 
 
@@ -92,14 +96,12 @@ public class ComensalServiceImpl implements ComensalService {
         LocalDate hasta = desde.withDayOfMonth(desde.lengthOfMonth());
 
         List<Object[]> raw = repository.getStatsByFechaRaw(desde, hasta);
-
-        return getRespuestaStats(raw);
+        int totalAsados = asadoRepository.countByMes(mes, anio);
+System.out.println("totalAsados: "+totalAsados);
+        return getRespuestaStats(raw, totalAsados);
     }
 
-    private List<ComensalStatsDTO> getRespuestaStats(List<Object[]> raw){
-        long totalAsados = raw.stream()
-                .mapToLong(r -> (Long) r[1])
-                .sum();
+    private List<ComensalStatsDTO> getRespuestaStats(List<Object[]> raw, int totalAsados){
 
         return raw.stream()
                 .map(r -> {

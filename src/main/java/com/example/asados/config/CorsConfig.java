@@ -16,7 +16,8 @@ public class CorsConfig {
                 "http://localhost:5173",
                 "http://localhost:8080",
                 "https://asados-1.onrender.com/",
-                "https://asados-frontend.vercel.app"
+                "https://asados-frontend.vercel.app",
+                "https://asados-mobile.vercel.app/"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

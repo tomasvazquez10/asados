@@ -88,14 +88,24 @@ public class CorteServiceImpl implements CorteService {
 
     @Override
     public List<CorteNombreStatsDTO> getStats() {
-        return repository.getStats();
+        List<CorteNombreStatsDTO> listaStats = repository.getStats();
+        return redondearListaStats(listaStats);
     }
 
     @Override
     public List<CorteNombreStatsDTO> getStatsByMes(int anio, int mes) {
         LocalDate desde = LocalDate.of(anio, mes, 1);
         LocalDate hasta = desde.withDayOfMonth(desde.lengthOfMonth());
+        List<CorteNombreStatsDTO> listaStats = repository.getStatsByFecha(desde, hasta);
 
-        return repository.getStatsByFecha(desde, hasta);
+        return redondearListaStats(listaStats);
+    }
+
+    private List<CorteNombreStatsDTO> redondearListaStats(List<CorteNombreStatsDTO> listaStats){
+        listaStats.forEach(stat -> {
+            double redondeado = Math.round(stat.getTotalKilos() * 10.0) / 10.0;
+            stat.setTotalKilos(redondeado);
+        });
+        return listaStats;
     }
 }

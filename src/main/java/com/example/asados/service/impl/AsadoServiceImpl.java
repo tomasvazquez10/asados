@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -255,6 +252,7 @@ public class AsadoServiceImpl implements AsadoService {
             cortesDTO.add(CorteMapper.toCorteDTO(c));
         }
         dto.setCortes(cortesDTO);
+        cortesDTO.sort(Comparator.comparingDouble(CorteDTO::getCantidad).reversed());
 
         return dto;
     }

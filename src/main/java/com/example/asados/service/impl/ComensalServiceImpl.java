@@ -3,6 +3,7 @@ package com.example.asados.service.impl;
 import com.example.asados.dto.ComensalRequestDTO;
 import com.example.asados.dto.ComensalResponseDTO;
 import com.example.asados.dto.ComensalStatsDTO;
+import com.example.asados.entity.Asado;
 import com.example.asados.entity.Comensal;
 import com.example.asados.entity.Grupo;
 import com.example.asados.mapper.ComensalMapper;
@@ -89,6 +90,14 @@ public class ComensalServiceImpl implements ComensalService {
         return getRespuestaStats(raw, totalAsados);
     }
 
+    @Override
+    public ComensalStatsDTO getStatsByComensalId(Long comensalId) {
+        List<Object[]> raw = repository.getStatsRawByComensalId(comensalId);
+        int totalAsados = asadoRepository.countTotal();
+
+        return getRespuestaStats(raw, totalAsados).get(0);
+    }
+
 
     @Override
     public List<ComensalStatsDTO> getStatsByMes(int anio, int mes) {
@@ -97,7 +106,7 @@ public class ComensalServiceImpl implements ComensalService {
 
         List<Object[]> raw = repository.getStatsByFechaRaw(desde, hasta);
         int totalAsados = asadoRepository.countByMes(mes, anio);
-System.out.println("totalAsados: "+totalAsados);
+
         return getRespuestaStats(raw, totalAsados);
     }
 
@@ -107,14 +116,37 @@ System.out.println("totalAsados: "+totalAsados);
                 .map(r -> {
                     String nombre = (String) r[0];
                     Long cantidad = (Long) r[1];
+                    Long comensalId = (Long) r[2];
 
                     double porcentaje = totalAsados == 0
                             ? 0
                             : (cantidad * 100.0) / totalAsados;
 
-                    return new ComensalStatsDTO(nombre, cantidad, porcentaje);
+                    Double cantidadKilos = calcularKilosPorComensal(comensalId);
+
+                    return new ComensalStatsDTO(nombre, cantidad, porcentaje, cantidadKilos);
                 })
                 .sorted((a, b) -> Long.compare(b.getCantidadAsados(), a.getCantidadAsados()))
                 .toList();
+    }
+
+    private Double calcularKilosPorComensal(Long comensalId) {
+
+        List<Asado> asados = asadoRepository.findByComensalId(comensalId);
+        double total = 0;
+
+        for (Asado asado : asados) {
+            double totalKilos = asado.getCortes()
+                    .stream()
+                    .mapToDouble(c -> c.getCantidad())
+                    .sum();
+            int cantComensales = asado.getComensales().size();
+
+            if (cantComensales > 0) {
+                total += totalKilos / cantComensales;
+            }
+        }
+
+        return total;
     }
 }

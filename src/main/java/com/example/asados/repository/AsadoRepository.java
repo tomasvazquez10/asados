@@ -44,4 +44,11 @@ public interface AsadoRepository extends JpaRepository<Asado, Long>{
 
     @Query("SELECT COUNT(a) FROM Asado a")
     int countTotal();
+
+    @Query("""
+    SELECT a FROM Asado a
+    JOIN a.comensales c
+    WHERE c.id = :comensalId
+    """)
+    List<Asado> findByComensalId(@Param("comensalId") Long comensalId);
 }

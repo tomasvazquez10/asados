@@ -56,4 +56,9 @@ public class ComensalController {
     ) {
         return service.getStatsByMes(anio, mes);
     }
+
+    @GetMapping("/stats/{id}")
+    public ComensalStatsDTO getStatsByComensalId(@PathVariable Long id){
+        return service.getStatsByComensalId(id);
+    }
 }

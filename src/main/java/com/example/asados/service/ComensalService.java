@@ -20,5 +20,7 @@ public interface ComensalService {
 
     List<ComensalStatsDTO> getStats();
 
+    ComensalStatsDTO getStatsByComensalId(Long comensalId);
+
     List<ComensalStatsDTO> getStatsByMes(int anio, int mes);
 }

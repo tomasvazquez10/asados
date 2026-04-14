@@ -11,16 +11,15 @@ import java.util.Optional;
 public interface ComensalRepository extends JpaRepository<Comensal, Long> {
 
     @Query("""
-        SELECT c.nombre, COUNT(a)
+        SELECT c.nombre, COUNT(a), c.id
         FROM Asado a
         JOIN a.comensales c
-        GROUP BY c.nombre
+        GROUP BY c.nombre, c.id
     """)
     List<Object[]> getStatsRaw();
 
-    // 📊 Por mes
     @Query("""
-        SELECT c.nombre, COUNT(a)
+        SELECT c.nombre, COUNT(a), c.id
         FROM Asado a
         JOIN a.comensales c
         WHERE a.fecha BETWEEN :desde AND :hasta
@@ -32,4 +31,13 @@ public interface ComensalRepository extends JpaRepository<Comensal, Long> {
     );
 
     Optional<Comensal> findByUsuarioIgnoreCase(String usuario);
+
+    @Query("""
+        SELECT c.nombre, COUNT(a), c.id
+        FROM Asado a
+        JOIN a.comensales c
+        WHERE c.id = :comensalId
+        GROUP BY c.nombre, c.id
+    """)
+    List<Object[]> getStatsRawByComensalId(Long comensalId);
 }

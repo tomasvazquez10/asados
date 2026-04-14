@@ -121,10 +121,13 @@ public class ComensalServiceImpl implements ComensalService {
                     double porcentaje = totalAsados == 0
                             ? 0
                             : (cantidad * 100.0) / totalAsados;
+                    double redondeadoPorc = Math.round(porcentaje * 10.0) / 10.0;
+
 
                     Double cantidadKilos = calcularKilosPorComensal(comensalId);
+                    Double cantidadKilosRed = Math.round(cantidadKilos * 10.0) / 10.0;
 
-                    return new ComensalStatsDTO(nombre, cantidad, porcentaje, cantidadKilos);
+                    return new ComensalStatsDTO(nombre, cantidad, redondeadoPorc, cantidadKilosRed);
                 })
                 .sorted((a, b) -> Long.compare(b.getCantidadAsados(), a.getCantidadAsados()))
                 .toList();

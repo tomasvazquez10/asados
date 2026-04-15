@@ -25,6 +25,8 @@ public interface AsadoService {
     void eliminar(Long id);
 
     AsadoResponseDTO crearDesdeSimple(AsadoSimpleRequestDTO request);
+
+    List<AsadoResponseDTO> getAsadosByComensalId(Long comensalId);
 }
 
 

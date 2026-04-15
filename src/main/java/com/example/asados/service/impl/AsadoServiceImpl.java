@@ -231,6 +231,13 @@ public class AsadoServiceImpl implements AsadoService {
         return toDTO(asadoRepo.save(asado));
     }
 
+    @Override
+    public List<AsadoResponseDTO> getAsadosByComensalId(Long comensalId) {
+        return asadoRepo.findByComensalId(comensalId).stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
     private AsadoResponseDTO toDTO(Asado a) {
         AsadoResponseDTO dto = new AsadoResponseDTO();
 

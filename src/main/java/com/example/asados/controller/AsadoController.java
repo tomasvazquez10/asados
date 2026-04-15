@@ -67,6 +67,11 @@ public class AsadoController {
         return service.getResumenMes(anio, mes);
     }
 
+    @GetMapping("/comensal/{id}")
+    public List<AsadoResponseDTO> getAsadosByComensalId(@PathVariable Long id) {
+        return service.getAsadosByComensalId(id);
+    }
+
     @PostMapping("/simple")
     public AsadoResponseDTO crearSimple(@RequestBody AsadoSimpleRequestDTO request) {
         return service.crearDesdeSimple(request);

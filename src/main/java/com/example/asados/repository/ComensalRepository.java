@@ -23,7 +23,7 @@ public interface ComensalRepository extends JpaRepository<Comensal, Long> {
         FROM Asado a
         JOIN a.comensales c
         WHERE a.fecha BETWEEN :desde AND :hasta
-        GROUP BY c.nombre
+        GROUP BY c.nombre, c.id
     """)
     List<Object[]> getStatsByFechaRaw(
             LocalDate desde,

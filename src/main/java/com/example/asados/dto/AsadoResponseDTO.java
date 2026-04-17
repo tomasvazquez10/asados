@@ -16,6 +16,7 @@ public class AsadoResponseDTO {
     private List<String> comensales;
 
     private List<CorteDTO> cortes;
+    private String urlImagen;
 
     public Long getId() {
         return id;
@@ -79,5 +80,13 @@ public class AsadoResponseDTO {
 
     public void setCortes(List<CorteDTO> cortes) {
         this.cortes = cortes;
+    }
+
+    public String getUrlImagen() {
+        return urlImagen;
+    }
+
+    public void setUrlImagen(String urlImagen) {
+        this.urlImagen = urlImagen;
     }
 }

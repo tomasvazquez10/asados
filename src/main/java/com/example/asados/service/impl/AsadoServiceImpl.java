@@ -248,6 +248,7 @@ public class AsadoServiceImpl implements AsadoService {
         dto.setGrupoNombre(a.getGrupo().getNombre());
         dto.setSedeNombre(a.getSede().getNombre());
         dto.setTipoNombre(a.getTipo().getNombre());
+        dto.setUrlImagen(a.getUrlImagen());
 
         dto.setComensales(
                 a.getComensales().stream()

@@ -39,6 +39,8 @@ public class Asado {
     @OneToMany(mappedBy = "asado", cascade = CascadeType.ALL)
     private List<Corte> cortes;
 
+    private String urlImagen;
+
     public Long getId() {
         return id;
     }
@@ -101,5 +103,13 @@ public class Asado {
 
     public void setCortes(List<Corte> cortes) {
         this.cortes = cortes;
+    }
+
+    public String getUrlImagen() {
+        return urlImagen;
+    }
+
+    public void setUrlImagen(String urlImagen) {
+        this.urlImagen = urlImagen;
     }
 }

@@ -51,4 +51,14 @@ public interface AsadoRepository extends JpaRepository<Asado, Long>{
     WHERE c.id = :comensalId
     """)
     List<Asado> findByComensalId(@Param("comensalId") Long comensalId);
+
+    List<Asado> findAllByOrderByFechaDesc();
+
+    @Query("""
+SELECT a
+FROM Asado a
+WHERE EXTRACT(MONTH FROM a.fecha)=:mes
+ORDER BY a.fecha DESC
+""")
+    List<Asado> findByMes(Long mes);
 }

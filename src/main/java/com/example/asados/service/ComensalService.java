@@ -3,6 +3,7 @@ package com.example.asados.service;
 import com.example.asados.dto.ComensalRequestDTO;
 import com.example.asados.dto.ComensalResponseDTO;
 import com.example.asados.dto.ComensalStatsDTO;
+import com.example.asados.dto.RankingComensalDTO;
 
 import java.util.List;
 
@@ -23,4 +24,6 @@ public interface ComensalService {
     ComensalStatsDTO getStatsByComensalId(Long comensalId);
 
     List<ComensalStatsDTO> getStatsByMes(int anio, int mes);
+
+    List<RankingComensalDTO> ranking(Integer mes);
 }

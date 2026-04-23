@@ -3,6 +3,7 @@ package com.example.asados.service.impl;
 import com.example.asados.dto.ComensalRequestDTO;
 import com.example.asados.dto.ComensalResponseDTO;
 import com.example.asados.dto.ComensalStatsDTO;
+import com.example.asados.dto.RankingComensalDTO;
 import com.example.asados.entity.Asado;
 import com.example.asados.entity.Comensal;
 import com.example.asados.entity.Grupo;
@@ -14,7 +15,9 @@ import com.example.asados.service.ComensalService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ComensalServiceImpl implements ComensalService {
@@ -110,6 +113,52 @@ public class ComensalServiceImpl implements ComensalService {
         return getRespuestaStats(raw, totalAsados);
     }
 
+    @Override
+    public List<RankingComensalDTO> ranking(Integer mes){
+
+        List<Asado> asados = mes == null
+                ? asadoRepository.findAllByOrderByFechaDesc()
+                : asadoRepository.findByMes(mes.longValue());
+
+        int totalGeneral = asados.size();
+
+        Map<Comensal,Integer> contador = new HashMap<>();
+
+        for(Asado a : asados){
+            for(Comensal c : a.getComensales()){
+                contador.merge(c,1,Integer::sum);
+            }
+        }
+
+        List<RankingComensalDTO> resultado =
+                contador.entrySet()
+                        .stream()
+                        .sorted((a,b)-> b.getValue()-a.getValue())
+                        .limit(10)
+                        .map(e -> {
+
+                            Comensal c = e.getKey();
+
+                            int racha = calcularRacha(c.getId(),asados);
+
+                            String movimiento =
+                                    calcularMovimiento(c.getId(),asados);
+
+                            double porcentaje =
+                                    (e.getValue()*100.0)/totalGeneral;
+
+                            return new RankingComensalDTO(0, c.getId(), c.getNombre(),
+                                    e.getValue(), porcentaje, racha, movimiento);
+
+                        }).toList();
+
+        for(int i=0;i<resultado.size();i++){
+            resultado.get(i).setRanking(i+1);
+        }
+
+        return resultado;
+    }
+
     private List<ComensalStatsDTO> getRespuestaStats(List<Object[]> raw, int totalAsados){
 
         return raw.stream()
@@ -151,5 +200,55 @@ public class ComensalServiceImpl implements ComensalService {
         }
 
         return total;
+    }
+
+    private Integer calcularRacha(Long comensalId, List<Asado> asados){
+
+        int streak=0;
+
+        for(Asado a: asados){
+
+            boolean asistio=
+                    a.getComensales()
+                            .stream()
+                            .anyMatch(c->c.getId().equals(comensalId));
+
+            if(asistio){
+                streak++;
+            }else{
+                break;
+            }
+        }
+
+        return streak;
+    }
+
+    private String calcularMovimiento(Long comensalId, List<Asado> asados){
+
+        List<Asado> ultimos3 =
+                asados.stream()
+                        .limit(3)
+                        .toList();
+
+        long asistencias=
+                ultimos3.stream()
+                        .filter(a ->
+                                a.getComensales()
+                                        .stream()
+                                        .anyMatch(c->
+                                                c.getId().equals(comensalId))
+                        )
+                        .count();
+
+        if(asistencias==3)
+            return "SUPER";
+
+        if(asistencias==2)
+            return "UP";
+
+        if(asistencias==1)
+            return "DOWN";
+
+        return "OUT";
     }
 }

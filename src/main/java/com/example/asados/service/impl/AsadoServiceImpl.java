@@ -150,10 +150,12 @@ public class AsadoServiceImpl implements AsadoService {
                 ));
         dto.setCantidadPorTipoAsado(porTipo);
 
-        double precioPromedio = asados.stream()
-                .mapToDouble(Asado::getPrecio)
-                .average()
-                .orElse(0.0);
+        double precioPromedio = Math.round(
+                asados.stream()
+                        .mapToDouble(Asado::getPrecio)
+                        .average()
+                        .orElse(0.0) * 100.0
+        ) / 100.0;
 
         dto.setPrecioPromedio(precioPromedio);
 

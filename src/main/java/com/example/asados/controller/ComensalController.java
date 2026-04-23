@@ -3,6 +3,7 @@ package com.example.asados.controller;
 import com.example.asados.dto.ComensalRequestDTO;
 import com.example.asados.dto.ComensalResponseDTO;
 import com.example.asados.dto.ComensalStatsDTO;
+import com.example.asados.dto.RankingComensalDTO;
 import com.example.asados.service.ComensalService;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,5 +61,15 @@ public class ComensalController {
     @GetMapping("/stats/{id}")
     public ComensalStatsDTO getStatsByComensalId(@PathVariable Long id){
         return service.getStatsByComensalId(id);
+    }
+
+    @GetMapping("/ranking")
+    public List<RankingComensalDTO> ranking(){
+        return service.ranking(null);
+    }
+
+    @GetMapping("/ranking/mes/{mes}")
+    public List<RankingComensalDTO> rankingMes(@PathVariable Integer mes){
+        return service.ranking(mes);
     }
 }

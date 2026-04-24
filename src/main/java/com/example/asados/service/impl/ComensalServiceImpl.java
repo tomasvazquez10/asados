@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.asados.helper.Helper.calcularMovimiento;
+import static com.example.asados.helper.Helper.calcularRacha;
+
 @Service
 public class ComensalServiceImpl implements ComensalService {
 
@@ -138,14 +141,9 @@ public class ComensalServiceImpl implements ComensalService {
                         .map(e -> {
 
                             Comensal c = e.getKey();
-
                             int racha = calcularRacha(c.getId(),asados);
-
-                            String movimiento =
-                                    calcularMovimiento(c.getId(),asados);
-
-                            double porcentaje =
-                                    (e.getValue()*100.0)/totalGeneral;
+                            String movimiento = calcularMovimiento(c.getId(),asados);
+                            double porcentaje = (e.getValue()*100.0)/totalGeneral;
 
                             return new RankingComensalDTO(0, c.getId(), c.getNombre(),
                                     e.getValue(), porcentaje, racha, movimiento);
@@ -200,55 +198,5 @@ public class ComensalServiceImpl implements ComensalService {
         }
 
         return total;
-    }
-
-    private Integer calcularRacha(Long comensalId, List<Asado> asados){
-
-        int streak=0;
-
-        for(Asado a: asados){
-
-            boolean asistio=
-                    a.getComensales()
-                            .stream()
-                            .anyMatch(c->c.getId().equals(comensalId));
-
-            if(asistio){
-                streak++;
-            }else{
-                break;
-            }
-        }
-
-        return streak;
-    }
-
-    private String calcularMovimiento(Long comensalId, List<Asado> asados){
-
-        List<Asado> ultimos3 =
-                asados.stream()
-                        .limit(3)
-                        .toList();
-
-        long asistencias=
-                ultimos3.stream()
-                        .filter(a ->
-                                a.getComensales()
-                                        .stream()
-                                        .anyMatch(c->
-                                                c.getId().equals(comensalId))
-                        )
-                        .count();
-
-        if(asistencias==3)
-            return "SUPER";
-
-        if(asistencias==2)
-            return "UP";
-
-        if(asistencias==1)
-            return "DOWN";
-
-        return "OUT";
     }
 }

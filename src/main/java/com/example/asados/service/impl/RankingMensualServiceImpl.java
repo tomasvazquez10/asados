@@ -6,6 +6,7 @@ import com.example.asados.entity.RankingMensual;
 import com.example.asados.repository.AsadoRepository;
 import com.example.asados.repository.RankingMensualRepository;
 import com.example.asados.service.RankingMensualService;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,22 +22,24 @@ public class RankingMensualServiceImpl implements RankingMensualService {
 
     private final RankingMensualRepository repository;
     private final AsadoRepository asadoRepository;
+    private Integer anio;
 
     public RankingMensualServiceImpl(RankingMensualRepository repository, AsadoRepository asadoRepository) {
         this.repository = repository;
         this.asadoRepository = asadoRepository;
+        anio = Year.now().getValue();
     }
 
     @Override
     @Transactional
     public List<RankingMensual> generarSnapshot(Integer mes) {
-        Integer anio = Year.now().getValue();
+
 
         if(repository.existsByAnioAndMes(anio, mes)){
             throw new RuntimeException("Snapshot ya generado");
         }
 
-        List<Asado> asados = asadoRepository.findByMes(mes.longValue());
+        List<Asado> asados = asadoRepository.findByMes(mes.longValue(), anio.longValue());
 
         int totalGeneral = asados.size();
         Map<Comensal,Integer> contador = new HashMap<>();

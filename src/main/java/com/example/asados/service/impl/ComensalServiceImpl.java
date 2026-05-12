@@ -12,9 +12,12 @@ import com.example.asados.repository.AsadoRepository;
 import com.example.asados.repository.ComensalRepository;
 import com.example.asados.repository.GrupoRepository;
 import com.example.asados.service.ComensalService;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Year;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +31,16 @@ public class ComensalServiceImpl implements ComensalService {
     private final ComensalRepository repository;
     private final GrupoRepository grupoRepository;
     private final AsadoRepository asadoRepository;
+    private LocalDate fechaInicio;
+    private Integer anio;
 
     public ComensalServiceImpl(ComensalRepository repository,
                                GrupoRepository grupoRepository, AsadoRepository asadoRepository) {
         this.repository = repository;
         this.grupoRepository = grupoRepository;
         this.asadoRepository = asadoRepository;
+        fechaInicio = LocalDate.of(2026,1,1);
+        anio = Year.now().getValue();
     }
 
     @Override
@@ -91,7 +98,9 @@ public class ComensalServiceImpl implements ComensalService {
     public List<ComensalStatsDTO> getStats() {
 
         List<Object[]> raw = repository.getStatsRaw();
-        int totalAsados = asadoRepository.countTotal();
+
+        LocalDate fin = LocalDate.now();
+        int totalAsados = asadoRepository.countTotal(fechaInicio, fin);
 
         return getRespuestaStats(raw, totalAsados);
     }
@@ -99,7 +108,8 @@ public class ComensalServiceImpl implements ComensalService {
     @Override
     public ComensalStatsDTO getStatsByComensalId(Long comensalId) {
         List<Object[]> raw = repository.getStatsRawByComensalId(comensalId);
-        int totalAsados = asadoRepository.countTotal();
+        LocalDate fin = LocalDate.now();
+        int totalAsados = asadoRepository.countTotal(fechaInicio, fin);
 
         return getRespuestaStats(raw, totalAsados).get(0);
     }
@@ -119,9 +129,11 @@ public class ComensalServiceImpl implements ComensalService {
     @Override
     public List<RankingComensalDTO> ranking(Integer mes){
 
+        LocalDate fin = LocalDate.now();
+
         List<Asado> asados = mes == null
-                ? asadoRepository.findAllByOrderByFechaDesc()
-                : asadoRepository.findByMes(mes.longValue());
+                ? asadoRepository.findAllByFechaBetweenOrderByFechaDesc(fechaInicio, fin)
+                : asadoRepository.findByMes(mes.longValue(), anio.longValue());
 
         int totalGeneral = asados.size();
 

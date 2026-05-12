@@ -42,8 +42,8 @@ public interface AsadoRepository extends JpaRepository<Asado, Long>{
     @Query("SELECT COUNT(a) FROM Asado a WHERE MONTH(a.fecha) = :mes AND YEAR(a.fecha) = :anio")
     int countByMes(@Param("mes") int mes, @Param("anio") int anio);
 
-    @Query("SELECT COUNT(a) FROM Asado a")
-    int countTotal();
+    @Query("SELECT COUNT(a) FROM Asado a WHERE a.fecha BETWEEN :inicio AND :fin")
+    int countTotal(@Param("inicio") LocalDate inicio, @Param("fin") LocalDate fin);
 
     @Query("""
     SELECT a FROM Asado a
@@ -54,11 +54,14 @@ public interface AsadoRepository extends JpaRepository<Asado, Long>{
 
     List<Asado> findAllByOrderByFechaDesc();
 
+    List<Asado> findAllByFechaBetweenOrderByFechaDesc(LocalDate desde, LocalDate hasta);
+
     @Query("""
-SELECT a
-FROM Asado a
-WHERE EXTRACT(MONTH FROM a.fecha)=:mes
-ORDER BY a.fecha DESC
+    SELECT a
+    FROM Asado a
+    WHERE EXTRACT(MONTH FROM a.fecha) = :mes
+      AND EXTRACT(YEAR FROM a.fecha) = :anio
+    ORDER BY a.fecha DESC
 """)
-    List<Asado> findByMes(Long mes);
+    List<Asado> findByMes(@Param("mes") Long mes, @Param("anio") Long anio);
 }

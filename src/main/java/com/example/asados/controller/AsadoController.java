@@ -36,8 +36,12 @@ public class AsadoController {
                     LocalDate.parse(fechaDesde),
                     LocalDate.parse(fechaHasta)
             );
+        }else{
+            LocalDate inicio = LocalDate.of(2026,01,01);
+            LocalDate fin = LocalDate.now();
+            return service.getByRangoFechas(inicio, fin);
         }
-        return service.listar();
+
 
     }
 

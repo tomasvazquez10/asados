@@ -18,6 +18,8 @@ public interface AsadoService {
 
     List<AsadoResponseDTO> getByRangoFechas(LocalDate desde, LocalDate hasta);
 
+    List<LocalDate> obtenerSoloFechasEntre(LocalDate desde, LocalDate hasta);
+
     List<AsadoResponseDTO> getByMes(int anio, int mes);
 
     AsadoMesResumenDTO getResumenMes(int anio, int mes);
@@ -27,6 +29,8 @@ public interface AsadoService {
     AsadoResponseDTO crearDesdeSimple(AsadoSimpleRequestDTO request);
 
     List<AsadoResponseDTO> getAsadosByComensalId(Long comensalId);
+
+    List<LocalDate> obtenerFechasPorAnio(Integer anio);
 }
 
 

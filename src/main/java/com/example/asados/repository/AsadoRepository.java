@@ -64,4 +64,15 @@ public interface AsadoRepository extends JpaRepository<Asado, Long>{
     ORDER BY a.fecha DESC
 """)
     List<Asado> findByMes(@Param("mes") Long mes, @Param("anio") Long anio);
+
+    @Query("""
+    SELECT a.fecha
+    FROM Asado a
+    WHERE EXTRACT(YEAR FROM a.fecha) = :anio
+    ORDER BY a.fecha ASC
+""")
+    List<LocalDate> findFechasByAnio(@Param("anio") Integer anio);
+
+    @Query("SELECT a.fecha FROM Asado a WHERE a.fecha BETWEEN :desde AND :hasta ORDER BY a.fecha ASC")
+    List<LocalDate> findFechasBetween(@Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
 }

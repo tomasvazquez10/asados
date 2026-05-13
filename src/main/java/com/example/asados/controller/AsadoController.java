@@ -5,7 +5,6 @@ import com.example.asados.dto.AsadoRequestDTO;
 import com.example.asados.dto.AsadoResponseDTO;
 import com.example.asados.dto.AsadoSimpleRequestDTO;
 import com.example.asados.service.AsadoService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -41,8 +40,14 @@ public class AsadoController {
             LocalDate fin = LocalDate.now();
             return service.getByRangoFechas(inicio, fin);
         }
+    }
 
-
+    @GetMapping("/fechas-rango")
+    public List<LocalDate> getFechasRango(
+            @RequestParam(required = false) String fechaDesde,
+            @RequestParam(required = false) String fechaHasta
+    ) {
+        return service.obtenerSoloFechasEntre(LocalDate.parse(fechaDesde), LocalDate.parse(fechaHasta));
     }
 
     @GetMapping("/{id}")
@@ -69,6 +74,11 @@ public class AsadoController {
             @RequestParam int anio
     ) {
         return service.getResumenMes(anio, mes);
+    }
+
+    @GetMapping("/fechas/{anio}")
+    public List<LocalDate> getFechasByAnio(@PathVariable Integer anio) {
+        return service.obtenerFechasPorAnio(anio);
     }
 
     @GetMapping("/comensal/{id}")

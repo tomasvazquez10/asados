@@ -114,6 +114,14 @@ public class AsadoServiceImpl implements AsadoService {
     }
 
     @Override
+    public List<LocalDate> obtenerSoloFechasEntre(LocalDate desde, LocalDate hasta) {
+        if (desde.isAfter(hasta)) {
+            throw new IllegalArgumentException("La fecha 'desde' no puede ser posterior a 'hasta'");
+        }
+        return asadoRepo.findFechasBetween(desde, hasta);
+    }
+
+    @Override
     public List<AsadoResponseDTO> getByMes(int anio, int mes) {
         LocalDate desde = LocalDate.of(anio, mes, 1);
         LocalDate hasta = desde.withDayOfMonth(desde.lengthOfMonth());
@@ -238,6 +246,14 @@ public class AsadoServiceImpl implements AsadoService {
         return asadoRepo.findByComensalId(comensalId).stream()
                 .map(this::toDTO)
                 .toList();
+    }
+
+    @Override
+    public List<LocalDate> obtenerFechasPorAnio(Integer anio) {
+        if (anio < 2000 || anio > 2100) {
+            throw new IllegalArgumentException("Año fuera de rango válido");
+        }
+        return asadoRepo.findFechasByAnio(anio);
     }
 
     private AsadoResponseDTO toDTO(Asado a) {
